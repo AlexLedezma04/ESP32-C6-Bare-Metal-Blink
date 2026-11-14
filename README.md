@@ -2,6 +2,8 @@
 
 Bare-metal Zig RGB blink for the ESP32-C6 microcontroller.
 
+https://github.com/user-attachments/assets/125fcc9c-6ce3-48d7-8c8b-56b7bdee86e7
+
 ## ESP32-C6 Documentation
 - https://documentation.espressif.com/esp32-c6_technical_reference_manual_en.pdf
 
