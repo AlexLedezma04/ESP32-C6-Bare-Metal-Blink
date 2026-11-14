@@ -17,4 +17,4 @@ flash: build
 	$(ESPTOOL) --chip esp32c6 --port $(PORT) write-flash 0x0 blink.bin
 
 clean:
-	rm -f blink.elf blink.bin blink.elf.o
+	rm -f blink.elf blink.bin
