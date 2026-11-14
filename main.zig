@@ -1,5 +1,4 @@
 const LED_PIN = 8;
-const BRIGHTNESS = 0x20; // 32
 const WDT_KEY = 0x50D8_3AA1;
 
 var COLOR_COUNTER: u8 = 0; // Based on the value, LED's color changes
@@ -28,12 +27,10 @@ fn feedWatchdogs() void {
         reg(timg + 0x60).* = 1;       // Feed
         reg(timg + 0x64).* = 0;       // Lock
     }
-
     // Low-power watchdog (LP_WDT)
     reg(0x600B_1C18).* = WDT_KEY; // Unlock
     reg(0x600B_1C14).* = 1 << 31; // Feed
     reg(0x600B_1C18).* = 0;       // Lock
-
     // Super watchdog (SWD)
     reg(0x600B_1C20).* = WDT_KEY; // Unlock
     reg(0x600B_1C1C).* = 1 << 31; // Feed
@@ -93,12 +90,10 @@ fn initLed() void {
     reg(GPIO + 0x554 + LED_PIN * 4).* = 71 | (1 << 9);
     reg(GPIO + 0x24).* = 1 << LED_PIN;
     setField(IO_MUX + 0x04 + LED_PIN * 4, 0x7 << 12, 1 << 12); // pin function = normal GPIO
-
     // Turn on RMT's clock, driven by the 40 MHz crystal
     reg(PCR + 0x2C).* = 1;
     reg(PCR + 0x30).* = (3 << 20) | (1 << 22);
     reg(RMT + 0x68).* |= (1 << 31) | (1 << 26) | (1 << 1) | 1; // clocks on, direct RAM access, super obvious
-
     reg(RMT_CTRL).* = CH0_CONF | APPLY;
 }
 
@@ -111,23 +106,12 @@ fn setLed(r: u32, g: u32, b: u32) void {
         reg(RMT_RAM + i * 4).* = if (bit == 1) BIT1 else BIT0;
     }
     reg(RMT_RAM + 24 * 4).* = 0; // end marker
-
     reg(RMT_CTRL).* = CH0_CONF | REWIND | APPLY;
     reg(RMT_CTRL).* = CH0_CONF | START | APPLY;
 }
 
-// The chip starts running here (see ENTRY in linker.ld).
-// No stack exists yet, so we can't run normal Zig code: set it up in assembly, then jump to main
-export fn _start() linksection(".text.init") callconv(.naked) noreturn {
-    asm volatile (
-        \\ la sp, _stack_top  // point the stack pointer at the top of RAM (defined in linker.ld)
-        \\ j  main            // jump to main (a jump, not a call: we never come back)
-    );
-}
-
 fn startBlinks(counter: *u8) void {
     if(counter.* > 2) {counter.* = 0;}
-
     switch(counter.*){
         0 => setLed(RED[0], RED[1], RED[2]),
         1 => setLed(GREEN[0], GREEN[1], GREEN[2]),
@@ -145,4 +129,13 @@ export fn main() noreturn {
     while (true) {
         startBlinks(&COLOR_COUNTER);
     }
+}
+
+// The chip starts running here (see ENTRY in linker.ld).
+// No stack exists yet, so we can't run normal Zig code: set it up in assembly, then jump to main
+export fn _start() linksection(".text.init") callconv(.naked) noreturn {
+    asm volatile (
+        \\ la sp, _stack_top  // point the stack pointer at the top of RAM (defined in linker.ld)
+        \\ j  main            // jump to main (a jump, not a call: we never come back)
+    );
 }
