@@ -1,14 +1,14 @@
 # ESP32-C6 LED RGB Blink
 
-Bare-metal Zig blink for the ESP32-C6.
+Bare-metal Zig RGB blink for the ESP32-C6 microcontroller.
+
+## ESP32-C6 Documentation
+- https://documentation.espressif.com/esp32-c6_technical_reference_manual_en.pdf
 
 ## Dependencies
 
 - [Zig](https://ziglang.org/download/)
 - Python 3 + [esptool](https://github.com/espressif/esptool) (in a venv)
-
-## ESP32-C6 Documentation
-- https://documentation.espressif.com/esp32-c6_technical_reference_manual_en.pdf
 
 ```sh
 python3 -m venv venv
