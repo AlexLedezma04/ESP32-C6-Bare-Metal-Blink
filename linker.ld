@@ -1,7 +1,5 @@
-/* Where the program starts running */
 ENTRY(_start)
 
-/* One block of memory: 64 KB of the chip's RAM, starting at this address */
 MEMORY
 {
     RAM (rwx) : ORIGIN = 0x40800000, LENGTH = 64K
